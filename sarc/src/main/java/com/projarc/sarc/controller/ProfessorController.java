@@ -10,7 +10,7 @@ import com.projarc.sarc.service.ProfessorService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/professors")
+@RequestMapping("/api/professores")
 public class ProfessorController {
 
     private final ProfessorService professorService;
