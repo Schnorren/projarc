@@ -54,8 +54,7 @@ public class TurmaService {
         // Verifica se a disciplina existe
         Disciplina disciplina = disciplinaService.findByIdEntity(turmaDTO.getDisciplinaCodigo());
 
-        // Verifica se o professor existe
-        Professor professor = professorService.findByIdEntity(turmaDTO.getProfessorId());
+        professorService.findByIdEntity(turmaDTO.getProfessorId());
 
         // Verifica a unicidade do código da turma dentro da disciplina
         if (turmaRepository.existsByCodigoAndDisciplina(turmaDTO.getCodigo(), disciplina)) {

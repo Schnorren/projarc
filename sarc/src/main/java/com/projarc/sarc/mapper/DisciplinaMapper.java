@@ -9,8 +9,8 @@ import com.projarc.sarc.dto.DisciplinaDTO;
 @Mapper(componentModel = "spring")
 public interface DisciplinaMapper {
     DisciplinaMapper INSTANCE = Mappers.getMapper(DisciplinaMapper.class);
-    
+
     DisciplinaDTO toDTO(Disciplina disciplina);
-    
+
     Disciplina toEntity(DisciplinaDTO disciplinaDTO);
 }

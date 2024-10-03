@@ -34,7 +34,7 @@ public class AulaService {
         return aulaMapper.toDTO(aula);
     }
 
-    public Aula findByIdEntity(Long id) { 
+    public Aula findByIdEntity(Long id) {
         return aulaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Aula não encontrada com ID: " + id));
     }
@@ -47,10 +47,7 @@ public class AulaService {
     }
 
     public AulaDTO save(AulaDTO aulaDTO) {
-        // Verifica se a turma existe
-        Turma turma = turmaService.findByIdEntity(aulaDTO.getTurmaCodigo());
-
-
+        turmaService.findByIdEntity(aulaDTO.getTurmaCodigo());
 
         Aula aula = aulaMapper.toEntity(aulaDTO);
         Aula savedAula = aulaRepository.save(aula);
