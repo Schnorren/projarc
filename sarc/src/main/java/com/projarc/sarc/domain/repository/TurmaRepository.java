@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.projarc.sarc.domain.model.Disciplina;
+import com.projarc.sarc.domain.model.Professor;
 import com.projarc.sarc.domain.model.Turma;
 
 import java.util.List;
@@ -13,4 +14,6 @@ public interface TurmaRepository extends JpaRepository<Turma, Integer> {
     boolean existsByCodigoAndDisciplina(Integer codigo, Disciplina disciplina);
 
     List<Turma> findByDisciplina(Disciplina disciplina);
+
+    List<Turma> findByProfessorAndHorario(Professor professor, String horario);
 }

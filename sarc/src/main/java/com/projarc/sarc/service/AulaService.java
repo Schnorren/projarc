@@ -11,6 +11,7 @@ import com.projarc.sarc.exception.DataIntegrityException;
 import com.projarc.sarc.exception.ResourceNotFoundException;
 import com.projarc.sarc.mapper.AulaMapper;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,7 +48,13 @@ public class AulaService {
     }
 
     public AulaDTO save(AulaDTO aulaDTO) {
+        LocalDate dataInicioSemestre = LocalDate.of(2021, 8, 2);
+        LocalDate dataFimSemestre = LocalDate.of(2021, 12, 18);
         turmaService.findByIdEntity(aulaDTO.getTurmaCodigo());
+
+        if (aulaDTO.getData().isBefore(dataInicioSemestre) || aulaDTO.getData().isAfter(dataFimSemestre)) {
+            throw new DataIntegrityException("A data da aula está fora do intervalo permitido para o semestre.");
+        }
 
         Aula aula = aulaMapper.toEntity(aulaDTO);
         Aula savedAula = aulaRepository.save(aula);
@@ -66,6 +73,8 @@ public class AulaService {
         if (aulaDTO.getTurmaCodigo() != null) {
             Turma turma = turmaService.findByIdEntity(aulaDTO.getTurmaCodigo());
             aula.setTurma(turma);
+
+            throw new UnsupportedOperationException("Aulas não podem ser modificadas após serem cadastradas.");
         }
 
         Aula updatedAula = aulaRepository.save(aula);

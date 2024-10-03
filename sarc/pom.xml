@@ -75,7 +75,6 @@
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok-mapstruct-binding</artifactId>
       <version>0.2.0</version>
-      <scope>provided</scope>
     </dependency>
 
     <!-- SpringDoc OpenAPI (Swagger) -->
@@ -117,7 +116,7 @@
             <path>
               <groupId>org.mapstruct</groupId>
               <artifactId>mapstruct-processor</artifactId>
-              <version>1.5.3.Final</version>
+              <version>1.5.5.Final</version>
             </path>
           </annotationProcessorPaths>
         </configuration>
@@ -127,14 +126,6 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <exclude>
-              <groupId>org.projectlombok</groupId>
-              <artifactId>lombok</artifactId>
-            </exclude>
-          </excludes>
-        </configuration>
       </plugin>
     </plugins>
   </build>

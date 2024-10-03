@@ -67,6 +67,17 @@ public class AlocacaoService {
             throw new DataIntegrityException("Professor não está disponível no horário selecionado.");
         }
 
+        boolean recursoJaAlocado = alocacaoRepository.existsByRecurso_CodigoAndDataAndHorario(
+                alocacaoDTO.getRecursoCodigo(), alocacaoDTO.getData(), alocacaoDTO.getHorario());
+
+        if (recursoJaAlocado) {
+            throw new DataIntegrityException("O recurso já está alocado para esse horário e data.");
+        }
+
+        if (aula.getTurma().getCodigo().longValue() != alocacaoDTO.getAulaId()) {
+            throw new DataIntegrityException("O recurso só pode ser alocado em aulas da mesma turma.");
+        }
+
         Alocacao alocacao = alocacaoMapper.toEntity(alocacaoDTO);
         Alocacao savedAlocacao = alocacaoRepository.save(alocacao);
         return alocacaoMapper.toDTO(savedAlocacao);

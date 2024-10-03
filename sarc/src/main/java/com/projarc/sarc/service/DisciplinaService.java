@@ -31,7 +31,7 @@ public class DisciplinaService {
         return disciplinaMapper.toDTO(disciplina);
     }
 
-    public Disciplina findByIdEntity(String codigo) {   
+    public Disciplina findByIdEntity(String codigo) {
         return disciplinaRepository.findById(codigo)
                 .orElseThrow(() -> new ResourceNotFoundException("Disciplina não encontrada com código: " + codigo));
     }
