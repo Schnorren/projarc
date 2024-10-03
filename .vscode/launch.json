@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-SarcApplication<sarc>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.projarc.sarc.SarcApplication",
+            "projectName": "sarc",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
