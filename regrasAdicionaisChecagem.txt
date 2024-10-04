@@ -1,0 +1,82 @@
+CHECKED
+REGRA 1
+Um recurso não pode ser associado a mais de uma turma ao mesmo tempo.
+
+
+
+
+
+
+CHECKED
+REGRA 2
+Um recurso só pode ser associado a uma turma nos horários programados da turma.
+
+
+
+
+
+
+NOT CHECKED
+REGRA 3
+Cada horário de turma utiliza o sistema de horários da universidade.
+
+
+
+
+
+
+CHECKED
+REGRA 4
+Cada código de disciplina é único.
+
+
+
+
+
+
+CHECKED
+REGRA 5
+Cada código de turma deve ser único para a mesma disciplina.
+
+
+
+
+
+
+NOT CHECKED
+REGRA 6
+Um professor não pode ser alocado para duas ou mais turmas no mesmo horário e dia da semana.
+
+
+
+
+
+
+NOT CHECKED
+REGRA 7
+As aulas ocorrem entre as datas de início e término de cada semestre.
+
+
+
+
+
+
+NOT CHECKED
+REGRA 8
+Uma turma pode reservar mais de um recurso.
+
+
+
+
+
+
+NOT CHECKED
+REGRA 9
+Os recursos são registrados junto com a turma e não são alterados.
+
+
+
+
+
+
+

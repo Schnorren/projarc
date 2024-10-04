@@ -62,7 +62,7 @@ public class TurmaService {
             throw new DataIntegrityException("O professor já está alocado a outra turma no mesmo horário.");
         }
 
-        // Verifica a unicidade do código da turma dentro da disciplina
+        // REGRA 5 - Cada código de turma deve ser único para a mesma disciplina.
         if (turmaRepository.existsByCodigoAndDisciplina(turmaDTO.getCodigo(), disciplina)) {
             throw new DataIntegrityException("Já existe uma turma com o código: " + turmaDTO.getCodigo()
                     + " para a disciplina: " + disciplina.getNome());

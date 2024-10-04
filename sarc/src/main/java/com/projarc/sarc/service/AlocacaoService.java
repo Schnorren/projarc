@@ -61,7 +61,7 @@ public class AlocacaoService {
             throw new DataIntegrityException("Recurso não disponível na data e horário selecionados.");
         }
 
-        // Verifica se o professor está disponível na data e horário
+        // REGRA 4 - Um professor não pode ser alocado a duas ou mais turmas no mesmo horário e dia da semana. 
         Long professorId = aula.getTurma().getProfessor().getId();
         if (!professorService.isProfessorAvailable(professorId, alocacaoDTO.getHorario())) {
             throw new DataIntegrityException("Professor não está disponível no horário selecionado.");
@@ -69,13 +69,14 @@ public class AlocacaoService {
 
         boolean recursoJaAlocado = alocacaoRepository.existsByRecurso_CodigoAndDataAndHorario(
                 alocacaoDTO.getRecursoCodigo(), alocacaoDTO.getData(), alocacaoDTO.getHorario());
-
+        // REGRA 1 - Um recurso não pode ser associado a mais de uma turma ao mesmo tempo.
         if (recursoJaAlocado) {
             throw new DataIntegrityException("O recurso já está alocado para esse horário e data.");
         }
 
-        if (aula.getTurma().getCodigo().longValue() != alocacaoDTO.getAulaId()) {
-            throw new DataIntegrityException("O recurso só pode ser alocado em aulas da mesma turma.");
+        // REGRA 2 - Um recurso só pode ser associado a uma turma nos horários programados da turma.
+        if (!aula.getData().equals(alocacaoDTO.getData()) || !aula.getHorario().equals(alocacaoDTO.getHorario())) {
+            throw new DataIntegrityException("O recurso só pode ser alocado durante o horário da aula.");
         }
 
         Alocacao alocacao = alocacaoMapper.toEntity(alocacaoDTO);
