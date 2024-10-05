@@ -87,37 +87,26 @@ public class AlocacaoService {
     public AlocacaoDTO update(Long id, AlocacaoDTO alocacaoDTO) {
         Alocacao alocacao = alocacaoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Alocação não encontrada com ID: " + id));
-
+    
+        // Verificar se o recurso está sendo alterado
+        if (!alocacao.getRecurso().getCodigo().equals(alocacaoDTO.getRecursoCodigo())) {
+            throw new DataIntegrityException("O recurso não pode ser alterado porque já está vinculado a uma alocação existente.");
+        }
+    
         // Atualiza os detalhes da alocação
         alocacao.setData(alocacaoDTO.getData());
         alocacao.setHorario(alocacaoDTO.getHorario());
-
+    
         // Atualiza a aula
         if (alocacaoDTO.getAulaId() != null) {
             Aula aula = aulaService.findByIdEntity(alocacaoDTO.getAulaId());
             alocacao.setAula(aula);
         }
-
-        // Atualiza o recurso
-        if (alocacaoDTO.getRecursoCodigo() != null) {
-            Recurso recurso = recursoService.findByIdEntity(alocacaoDTO.getRecursoCodigo());
-            alocacao.setRecurso(recurso);
-        }
-
-        // Revalida as regras de reserva
-        if (!recursoService.isRecursoAvailable(alocacao.getRecurso().getCodigo(), alocacao.getHorario(),
-                alocacao.getData())) { // Alterado para LocalDate
-            throw new DataIntegrityException("Recurso não disponível na data e horário selecionados.");
-        }
-
-        Long professorId = alocacao.getAula().getTurma().getProfessor().getId();
-        if (!professorService.isProfessorAvailable(professorId, alocacao.getAula().getDiaSemana(), alocacao.getHorario())) {
-            throw new DataIntegrityException("Professor não está disponível no dia e horário selecionados.");
-        }
-
+    
         Alocacao updatedAlocacao = alocacaoRepository.save(alocacao);
         return alocacaoMapper.toDTO(updatedAlocacao);
     }
+    
 
     public void delete(Long id) {
         Alocacao alocacao = alocacaoRepository.findById(id)

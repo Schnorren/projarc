@@ -6,7 +6,6 @@ public enum HorarioEnum {
     C("09:45-10:30"),
     D("10:30-11:15"),
     E("11:30-12:15"),
-    E1("12:15-13:00"),
     F("14:00-14:45"),
     G("14:45-15:30"),
     H("15:45-16:30"),
@@ -26,5 +25,14 @@ public enum HorarioEnum {
 
     public String getTimeRange() {
         return timeRange;
+    }
+
+    public static HorarioEnum fromValue(String value) {
+        for (HorarioEnum horario : HorarioEnum.values()) {
+            if (horario.name().equalsIgnoreCase(value)) {
+                return horario;
+            }
+        }
+        throw new IllegalArgumentException("Horário inválido: " + value);
     }
 }
