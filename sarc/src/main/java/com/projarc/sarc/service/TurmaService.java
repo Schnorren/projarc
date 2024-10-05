@@ -4,14 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.projarc.sarc.domain.model.Disciplina;
+import com.projarc.sarc.domain.model.HorarioEnum;
 import com.projarc.sarc.domain.model.Professor;
 import com.projarc.sarc.domain.model.Turma;
+import com.projarc.sarc.domain.model.DiaSemanaEnum;
 import com.projarc.sarc.domain.repository.TurmaRepository;
 import com.projarc.sarc.dto.TurmaDTO;
 import com.projarc.sarc.exception.DataIntegrityException;
 import com.projarc.sarc.exception.ResourceNotFoundException;
 import com.projarc.sarc.mapper.TurmaMapper;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,15 +54,25 @@ public class TurmaService {
     }
 
     public TurmaDTO save(TurmaDTO turmaDTO) {
+
+        // REGRA 3 - Cada horário de turma utiliza o sistema de horários da universidade.
+        if (turmaDTO.getHorario() == null || !Arrays.asList(HorarioEnum.values()).contains(turmaDTO.getHorario())) {
+            throw new DataIntegrityException("Horário inválido. Deve seguir o sistema de horários da universidade.");
+        }
+
         // Verifica se a disciplina existe
         Disciplina disciplina = disciplinaService.findByIdEntity(turmaDTO.getDisciplinaCodigo());
 
         Professor professor = professorService.findByIdEntity(turmaDTO.getProfessorId());
 
-        List<Turma> turmas = turmaRepository.findByProfessorAndHorario(professor, turmaDTO.getHorario());
+        // Verificar disponibilidade do professor no dia e horário
+        List<Turma> turmas = turmaRepository.findByProfessorAndDiaSemanaAndHorario(
+            professor, turmaDTO.getDiaSemana(), turmaDTO.getHorario()
+        );
 
+        // REGRA 6 - Um professor não pode ser alocado a duas ou mais turmas no mesmo dia e horário.
         if (!turmas.isEmpty()) {
-            throw new DataIntegrityException("O professor já está alocado a outra turma no mesmo horário.");
+            throw new DataIntegrityException("O professor já está alocado a outra turma no mesmo dia e horário.");
         }
 
         // REGRA 5 - Cada código de turma deve ser único para a mesma disciplina.

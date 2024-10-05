@@ -9,6 +9,7 @@ import com.projarc.sarc.dto.RecursoDTO;
 import com.projarc.sarc.exception.DataIntegrityException;
 import com.projarc.sarc.exception.ResourceNotFoundException;
 import com.projarc.sarc.mapper.RecursoMapper;
+import com.projarc.sarc.domain.model.HorarioEnum;
 
 import java.time.LocalDate; 
 import java.util.List;
@@ -57,10 +58,15 @@ public class RecursoService {
     public RecursoDTO update(Integer codigo, RecursoDTO recursoDTO) {
         Recurso recurso = recursoRepository.findById(codigo)
                 .orElseThrow(() -> new ResourceNotFoundException("Recurso não encontrado com código: " + codigo));
-
+    
+        // REGRA 9 - Os recursos são registrados junto com a turma e não são alterados.
+        if (recurso.getAlocacoes() != null && !recurso.getAlocacoes().isEmpty()) {
+            throw new DataIntegrityException("Não é possível alterar o recurso pois ele está associado a alocações.");
+        }
+    
         // Atualiza a descrição do recurso
         recurso.setDescricao(recursoDTO.getDescricao());
-
+    
         Recurso updatedRecurso = recursoRepository.save(recurso);
         return recursoMapper.toDTO(updatedRecurso);
     }
@@ -79,21 +85,13 @@ public class RecursoService {
 
     // Método para verificar a disponibilidade do recurso em uma data e horário
     // específicos
-    public boolean isRecursoAvailable(Integer recursoCodigo, String horario, String data) {
+    public boolean isRecursoAvailable(Integer recursoCodigo, HorarioEnum horario, LocalDate data) {
         Recurso recurso = recursoRepository.findById(recursoCodigo)
                 .orElseThrow(
                         () -> new ResourceNotFoundException("Recurso não encontrado com código: " + recursoCodigo));
 
-        // Converter a string data para LocalDate
-        LocalDate localDate;
-        try {
-            localDate = LocalDate.parse(data);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Formato de data inválido. Use YYYY-MM-DD.");
-        }
-
         return recurso.getAlocacoes().stream()
-                .noneMatch(alocacao -> alocacao.getHorario().equalsIgnoreCase(horario)
-                        && alocacao.getData().equals(localDate));
+                .noneMatch(alocacao -> alocacao.getHorario() == horario
+                        && alocacao.getData().equals(data));
     }
 }

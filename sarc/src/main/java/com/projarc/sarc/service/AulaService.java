@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.projarc.sarc.domain.model.Aula;
+import com.projarc.sarc.domain.model.HorarioEnum;
+import com.projarc.sarc.domain.model.Semestre;
 import com.projarc.sarc.domain.model.Turma;
 import com.projarc.sarc.domain.repository.AulaRepository;
 import com.projarc.sarc.dto.AulaDTO;
@@ -12,6 +14,7 @@ import com.projarc.sarc.exception.ResourceNotFoundException;
 import com.projarc.sarc.mapper.AulaMapper;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,12 +24,14 @@ public class AulaService {
     private final AulaRepository aulaRepository;
     private final TurmaService turmaService;
     private final AulaMapper aulaMapper;
+    private final SemestreService semestreService;
 
     @Autowired
-    public AulaService(AulaRepository aulaRepository, TurmaService turmaService, AulaMapper aulaMapper) {
+    public AulaService(AulaRepository aulaRepository, TurmaService turmaService, AulaMapper aulaMapper, SemestreService semestreService) {
         this.aulaRepository = aulaRepository;
         this.turmaService = turmaService;
         this.aulaMapper = aulaMapper;
+        this.semestreService = semestreService;
     }
 
     public AulaDTO findById(Long id) {
@@ -48,11 +53,21 @@ public class AulaService {
     }
 
     public AulaDTO save(AulaDTO aulaDTO) {
-        LocalDate dataInicioSemestre = LocalDate.of(2021, 8, 2);
-        LocalDate dataFimSemestre = LocalDate.of(2021, 12, 18);
-        turmaService.findByIdEntity(aulaDTO.getTurmaCodigo());
+        Semestre semestreAtual = semestreService.getCurrentSemester();
 
-        if (aulaDTO.getData().isBefore(dataInicioSemestre) || aulaDTO.getData().isAfter(dataFimSemestre)) {
+        Turma turma = turmaService.findByIdEntity(aulaDTO.getTurmaCodigo());
+
+        if (turma.getDiaSemana() != aulaDTO.getDiaSemana()) {
+            throw new DataIntegrityException("O dia da semana da aula deve corresponder ao da turma.");
+        }
+
+        // REGRA 3 - Cada horário de turma utiliza o sistema de horários da universidade.
+        if (aulaDTO.getHorario() == null || !Arrays.asList(HorarioEnum.values()).contains(aulaDTO.getHorario())) {
+            throw new DataIntegrityException("Horário inválido. Deve seguir o sistema de horários da universidade.");
+        }
+
+        // REGRA 7 - As aulas ocorrem entre as datas de início e término de cada semestre.
+        if (aulaDTO.getData().isBefore(semestreAtual.getDataInicio()) || aulaDTO.getData().isAfter(semestreAtual.getDataFim())) {
             throw new DataIntegrityException("A data da aula está fora do intervalo permitido para o semestre.");
         }
 

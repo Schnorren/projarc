@@ -9,6 +9,8 @@ import com.projarc.sarc.dto.ProfessorDTO;
 import com.projarc.sarc.exception.DataIntegrityException;
 import com.projarc.sarc.exception.ResourceNotFoundException;
 import com.projarc.sarc.mapper.ProfessorMapper;
+import com.projarc.sarc.domain.model.DiaSemanaEnum;
+import com.projarc.sarc.domain.model.HorarioEnum;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -85,12 +87,11 @@ public class ProfessorService {
     }
 
     // Método adicional para verificar disponibilidade do professor
-    public boolean isProfessorAvailable(Long professorId, String horario) {
+    public boolean isProfessorAvailable(Long professorId, DiaSemanaEnum diaSemana, HorarioEnum horario) {
         Professor professor = professorRepository.findById(professorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Professor não encontrado com ID: " + professorId));
-        // Implementar lógica para verificar conflitos de horário
-        // Por exemplo, verificar se o professor já tem uma turma no mesmo horário
+        // Verificar se o professor já tem uma turma no mesmo dia e horário
         return professor.getTurmas().stream()
-                .noneMatch(turma -> turma.getHorario().equalsIgnoreCase(horario));
+                .noneMatch(turma -> turma.getDiaSemana() == diaSemana && turma.getHorario() == horario);
     }
 }

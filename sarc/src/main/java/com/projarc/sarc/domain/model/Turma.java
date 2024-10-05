@@ -22,8 +22,13 @@ public class Turma {
     @JoinColumn(name = "professor_id", nullable = false)
     private Professor professor; // Professor responsável
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String horario; // Dias da semana e horários
+    private HorarioEnum horario; // Horário da turma
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private DiaSemanaEnum diaSemana; // Dia da semana da turma
 
     @OneToMany(mappedBy = "turma", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude

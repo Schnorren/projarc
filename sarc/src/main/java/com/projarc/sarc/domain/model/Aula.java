@@ -18,8 +18,13 @@ public class Aula {
     @Column(nullable = false)
     private LocalDate data; // Data da aula
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String horario; // Horário (letras do horário)
+    private HorarioEnum horario; // Horário da aula
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private DiaSemanaEnum diaSemana; // Dia da semana da aula
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "turma_codigo", nullable = false)

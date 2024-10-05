@@ -1,79 +1,72 @@
-CHECKED
-REGRA 1
+
+REGRA 1 - CHECKED (AlocacaoService)
 Um recurso não pode ser associado a mais de uma turma ao mesmo tempo.
+* A lógica impede a alocação duplicada do mesmo recurso no mesmo horário e data.
 
 
 
 
 
-
-CHECKED
-REGRA 2
+REGRA 2 - CHECKED (AlocacaoService)
 Um recurso só pode ser associado a uma turma nos horários programados da turma.
+* A alocação do recurso está restrita aos horários programados da aula.
 
 
 
 
 
-
-NOT CHECKED
-REGRA 3
+REGRA 3 - (AulaService e TurmaService)
 Cada horário de turma utiliza o sistema de horários da universidade.
+* O uso de um enum para horários garante a conformidade com o sistema de horários da universidade.
 
 
 
 
 
 
-CHECKED
-REGRA 4
+REGRA 4 - (DisciplinaService)
 Cada código de disciplina é único.
+* A unicidade do código da disciplina é garantida no momento da criação.
 
 
 
 
 
-
-CHECKED
-REGRA 5
+REGRA 5 - (TurmaService)
 Cada código de turma deve ser único para a mesma disciplina.
+* O código da turma é restrito a ser único dentro de cada disciplina.
 
 
 
 
 
-
-NOT CHECKED
-REGRA 6
+REGRA 6 - (TurmaService)
 Um professor não pode ser alocado para duas ou mais turmas no mesmo horário e dia da semana.
+* A lógica impede que um professor seja alocado para múltiplas turmas no mesmo dia e horário. 
 
 
 
 
 
-
-NOT CHECKED
-REGRA 7
+REGRA 7 - (AulaService)
 As aulas ocorrem entre as datas de início e término de cada semestre.
+* As aulas são restritas ao período do semestre vigente.
 
 
 
 
 
-
-NOT CHECKED
-REGRA 8
+REGRA 8 (ManyToOne - entidade Alocacao)
 Uma turma pode reservar mais de um recurso.
+* O modelo de dados e a lógica de serviço permitem múltiplas alocações de recursos para uma única turma.
 
 
 
 
 
-
-NOT CHECKED
-REGRA 9
+REGRA 9 - (RecursoService)
 Os recursos são registrados junto com a turma e não são alterados.
-
+* Não permite que o sistema altere o recurso quando o mesmo está vinculado a uma alocação.
 
 
 

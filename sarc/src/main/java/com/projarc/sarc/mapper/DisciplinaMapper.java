@@ -12,9 +12,9 @@ public interface DisciplinaMapper {
 
     DisciplinaMapper INSTANCE = Mappers.getMapper(DisciplinaMapper.class);
 
-    @Mapping(source = "turmas", target = "turmas") // Mapeando a lista de turmas
+    @Mapping(source = "turmas", target = "turmas")
     DisciplinaDTO toDTO(Disciplina disciplina);
 
-    @Mapping(source = "turmas", target = "turmas") // Mapeando a lista de turmas
+    @Mapping(source = "turmas", target = "turmas")
     Disciplina toEntity(DisciplinaDTO disciplinaDTO);
 }

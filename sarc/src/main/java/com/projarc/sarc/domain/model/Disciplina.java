@@ -1,6 +1,5 @@
 package com.projarc.sarc.domain.model;
 
-
 import java.util.List;
 import jakarta.persistence.*;
 import lombok.*;

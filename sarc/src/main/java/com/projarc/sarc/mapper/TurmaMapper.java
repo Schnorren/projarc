@@ -11,9 +11,13 @@ public interface TurmaMapper {
 
     @Mapping(source = "disciplina.codigo", target = "disciplinaCodigo")
     @Mapping(source = "professor.id", target = "professorId")
+    @Mapping(source = "diaSemana", target = "diaSemana")
+    @Mapping(source = "horario", target = "horario")
     TurmaDTO toDTO(Turma turma);
 
     @Mapping(source = "disciplinaCodigo", target = "disciplina.codigo")
     @Mapping(source = "professorId", target = "professor.id")
+    @Mapping(source = "diaSemana", target = "diaSemana")
+    @Mapping(source = "horario", target = "horario")
     Turma toEntity(TurmaDTO turmaDTO);
 }
