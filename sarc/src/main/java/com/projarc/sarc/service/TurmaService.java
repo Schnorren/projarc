@@ -7,7 +7,6 @@ import com.projarc.sarc.domain.model.Disciplina;
 import com.projarc.sarc.domain.model.HorarioEnum;
 import com.projarc.sarc.domain.model.Professor;
 import com.projarc.sarc.domain.model.Turma;
-import com.projarc.sarc.domain.model.DiaSemanaEnum;
 import com.projarc.sarc.domain.repository.TurmaRepository;
 import com.projarc.sarc.dto.TurmaDTO;
 import com.projarc.sarc.exception.DataIntegrityException;
