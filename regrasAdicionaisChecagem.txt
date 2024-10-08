@@ -56,7 +56,8 @@ Tentativa de violação da regra utilizando o POST /api/turmas
   "diaSemana": "SEGUNDA"
 }
 Esperado: Erro, pois o horário Z não está definido no enum de horários (A, B, C, etc.). 
-Resultado: Ocorreu um erro interno.          ********* ARRUMAR
+Resultado: Valor inválido 'Z' para o campo 'horario'. Valores permitidos: [A, B, C, D, E, F, G, H, I, J, K, L, M, N, P].
+
 
 
 REGRA 4 - (DisciplinaService)
@@ -166,7 +167,8 @@ Tentativa de violação da regra utilizando o POST /api/alocacoes
 }
 
 Esperado: Isso deve ser permitido pelo sistema, pois a regra permite múltiplas alocações para uma turma
-Resultado: Professor não está disponível no dia e horário selecionados.    ****** CORRIGIR
+Resultado: Professor não está disponível no dia e horário selecionados.    
+****** CORRIGIR
 
 
 
