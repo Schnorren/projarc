@@ -12,7 +12,6 @@ public interface AulaMapper {
     @Mapping(source = "turma.codigo", target = "turmaCodigo")
     @Mapping(source = "horario", target = "horario")
     @Mapping(source = "diaSemana", target = "diaSemana")
-    @Mapping(source = "alocacoes", target = "alocacoes") // Mapeia a lista de alocações
     AulaDTO toDTO(Aula aula);
 
     @Mapping(source = "turmaCodigo", target = "turma.codigo")

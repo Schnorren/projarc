@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDate;
-import java.util.List;
 
 import com.projarc.sarc.domain.model.HorarioEnum;
 import com.projarc.sarc.domain.model.DiaSemanaEnum;
@@ -27,5 +26,4 @@ public class AulaDTO {
     @jakarta.validation.constraints.NotNull(message = "O código da turma associada não pode ser nulo.")
     private Integer turmaCodigo;         // Código da turma associada
 
-    private List<AlocacaoDTO> alocacoes; // Lista de alocações associadas
 }
