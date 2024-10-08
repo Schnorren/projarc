@@ -1,3 +1,11 @@
+SLIDE DA APRESENTACAO
+https://www.canva.com/design/DAGS5RpzfTY/PCiPbsPp8j-IqdavczREqw/edit?utm_content=DAGS5RpzfTY&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
+
+
+
+
+REGRAS
+
 
 REGRA 1 - CHECKED (AlocacaoService)
 Um recurso não pode ser associado a mais de uma turma ao mesmo tempo.
