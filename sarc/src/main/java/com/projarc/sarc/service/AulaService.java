@@ -13,6 +13,7 @@ import com.projarc.sarc.exception.DataIntegrityException;
 import com.projarc.sarc.exception.ResourceNotFoundException;
 import com.projarc.sarc.mapper.AulaMapper;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,6 +38,41 @@ public class AulaService {
         Aula aula = aulaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Aula não encontrada com ID: " + id));
         return aulaMapper.toDTO(aula);
+    }
+
+    public void generateWeeklyClassesForAllTurmas() {
+        System.out.println("Iniciando a geração de aulas para todas as turmas...");
+
+        // Obtém o semestre atual
+        Semestre semestreAtual = semestreService.getCurrentSemester();
+        System.out.println("Semestre atual: " + semestreAtual.getAtivo());
+        
+        // Busca todas as turmas existentes
+        List<Turma> turmas = turmaService.findAllEntities();
+
+        // Cria aulas para cada turma ao longo do semestre
+        for (Turma turma : turmas) {
+            LocalDate currentDate = semestreAtual.getDataInicio();
+
+            // Itera a partir da data de início do semestre até o final
+            while (!currentDate.isAfter(semestreAtual.getDataFim())) {
+                // Verifica se o dia da semana corresponde ao dia configurado para a turma
+                if (currentDate.getDayOfWeek().equals(turma.getDiaSemana().getDayOfWeek())) {
+                    // Cria a aula para a data atual
+                    Aula aula = new Aula();
+                    aula.setTurma(turma);
+                    aula.setData(currentDate);
+                    aula.setHorario(turma.getHorario());
+                    aula.setDiaSemana(turma.getDiaSemana());
+
+                    // Salva a aula no repositório
+                    aulaRepository.save(aula);
+                }
+
+                // Incrementa a data em um dia
+                currentDate = currentDate.plusDays(1);
+            }
+        }
     }
 
     public Aula findByIdEntity(Long id) {

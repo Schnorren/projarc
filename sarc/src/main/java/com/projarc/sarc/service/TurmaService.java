@@ -7,7 +7,6 @@ import com.projarc.sarc.domain.model.Disciplina;
 import com.projarc.sarc.domain.model.HorarioEnum;
 import com.projarc.sarc.domain.model.Professor;
 import com.projarc.sarc.domain.model.Turma;
-import com.projarc.sarc.domain.model.DiaSemanaEnum;
 import com.projarc.sarc.domain.repository.TurmaRepository;
 import com.projarc.sarc.dto.TurmaDTO;
 import com.projarc.sarc.exception.DataIntegrityException;
@@ -39,6 +38,10 @@ public class TurmaService {
         Turma turma = turmaRepository.findById(codigo)
                 .orElseThrow(() -> new ResourceNotFoundException("Turma não encontrada com código: " + codigo));
         return turmaMapper.toDTO(turma);
+    }
+
+    public List<Turma> findAllEntities() {
+        return turmaRepository.findAll();
     }
 
     public Turma findByIdEntity(Integer codigo) {

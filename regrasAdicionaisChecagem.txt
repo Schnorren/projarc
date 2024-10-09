@@ -7,35 +7,32 @@ https://www.canva.com/design/DAGS5RpzfTY/PCiPbsPp8j-IqdavczREqw/edit?utm_content
 REGRAS
 
 
-REGRA 1 - CHECKED (AlocacaoService)
+REGRA 1 - (AlocacaoService)
 Um recurso não pode ser associado a mais de uma turma ao mesmo tempo.
 * A lógica impede a alocação duplicada do mesmo recurso no mesmo horário e data.
 
 Tentativa de violação da regra utilizando o POST /api/alocacoes
 {
-  "data": "2024-09-01",
+  "data": "2024-01-15",
   "horario": "A",
   "aulaId": 2,
   "recursoCodigo": 1
 }
-Esperado: Resultar em erro, pois o recurso Sala 310 já está alocado para a aula de Cálculo I (aulaId: 1) no mesmo dia e horário.
 Resultado: Recurso não disponível na data e horário selecionados.
 
 
 
-REGRA 2 - CHECKED (AlocacaoService)
+REGRA 2 - (AlocacaoService)
 Um recurso só pode ser associado a uma turma nos horários programados da turma.
 * A alocação do recurso está restrita aos horários programados da aula.
 
 Tentativa de violação da regra utilizando o POST /api/alocacoes
 {
-  "id": 10,
-  "data": "2024-09-01",
+  "data": "2024-01-15",
   "horario": "B",
   "aulaId": 1,
-  "recursoCodigo": 2
+  "recursoCodigo": 1
 }
-Esperado: Erro, pois a Aula 1 (Cálculo I) está programada para o horário A, e estamos tentando alocar o recurso no horário B.
 Resultado: O recurso só pode ser alocado durante o horário da aula.
 
 
@@ -55,7 +52,6 @@ Tentativa de violação da regra utilizando o POST /api/turmas
   "horario": "Z",
   "diaSemana": "SEGUNDA"
 }
-Esperado: Erro, pois o horário Z não está definido no enum de horários (A, B, C, etc.). 
 Resultado: Valor inválido 'Z' para o campo 'horario'. Valores permitidos: [A, B, C, D, E, F, G, H, I, J, K, L, M, N, P].
 
 
@@ -66,28 +62,11 @@ Cada código de disciplina é único.
 
 Tentativa de violação da regra utilizando o POST /api/disciplinas
 {
-  "codigo": "95300-04",
-  "nome": "CÁLCULO I",
-  "cargaHoraria": 60,
-  "turmas": [
-    {
-      "codigo": 101,
-      "disciplinaCodigo": "95300-04",
-      "professorId": 1,
-      "diaSemana": "SEGUNDA",
-      "horario": "A"
-    },
-    {
-      "codigo": 102,
-      "disciplinaCodigo": "95300-04",
-      "professorId": 2,
-      "diaSemana": "TERCA",
-      "horario": "B"
-    }
-  ]
+  "codigo": "CS101",
+  "nome": "Algoritmos Avançados",
+  "cargaHoraria": 60
 }
-Esperado: Erro, pois o código 95300-04 já existe para Cálculo I. 
-Resultado: Já existe uma disciplina com o código: 95300-04
+Resultado: Já existe uma disciplina com o código: CS101
 
 
 
@@ -105,8 +84,8 @@ Tentativa de violação da regra utilizando o POST /api/turmas
   "horario": "A",
   "diaSemana": "TERCA"
 }
-Esperado: Erro, pois a turma 101 já existe para Cálculo I. 
-Resultado: Já existe uma turma com o código: 101 para a disciplina: CALCULO I
+Resultado: Já existe uma turma com o código: 1 para a disciplina: ProgramaÃ§Ã£o I
+
 
 
 
@@ -119,14 +98,12 @@ Um professor não pode ser alocado para duas ou mais turmas no mesmo horário e 
 
 Tentativa de violação da regra utilizando o POST /api/turmas
 {
-  "codigo": 108,
-  "disciplinaCodigo": "98705-02",
-  "professorId": 1,
+  "codigo": 5,
+  "diaSemana": "SEGUNDA",
   "horario": "A",
-  "diaSemana": "SEGUNDA"
+  "disciplinaCodigo": "CS101",
+  "professorId": 1
 }
-
-Esperado: O professor DANIELA RODRIGUES já está alocado para uma turma no mesmo horário A na SEGUNDA
 Resultado: O professor já está alocado a outra turma no mesmo dia e horário.
 
 
@@ -139,14 +116,11 @@ As aulas ocorrem entre as datas de início e término de cada semestre.
 
 Tentativa de violação da regra utilizando o POST /api/aulas
 {
-  "id": 8,
-  "data": "2024-07-31",
-  "horario": "A",
+  "data": "2024-07-01",
   "diaSemana": "SEGUNDA",
-  "turmaCodigo": 101
+  "horario": "A",
+  "turmaCodigo": 1
 }
-
-Esperado: Erro, pois a data 2024-07-31 está fora do intervalo do semestre (2024-08-01 a 2024-12-15).
 Resultado: A data da aula está fora do intervalo permitido para o semestre.
 
 
@@ -160,16 +134,13 @@ Uma turma pode reservar mais de um recurso.
 
 Tentativa de violação da regra utilizando o POST /api/alocacoes
 {
-  "data": "2024-09-01",
+  "data": "2024-01-15",
   "horario": "A",
   "aulaId": 1,
   "recursoCodigo": 2
 }
 
-Esperado: Isso deve ser permitido pelo sistema, pois a regra permite múltiplas alocações para uma turma
-Resultado: Professor não está disponível no dia e horário selecionados.    
-****** CORRIGIR
-
+Resultado: Permitido e recurso inserido
 
 
 
@@ -187,10 +158,4 @@ ID: 1
   "aulaId": 1,
   "recursoCodigo": 4
 }
-
-Esperado: Erro, pois a alteração de recurso para uma alocação existente viola a regra.
 Resultado: O recurso não pode ser alterado porque já está vinculado a uma alocação existente.
-
-
-
-

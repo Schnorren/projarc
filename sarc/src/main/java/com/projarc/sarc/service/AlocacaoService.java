@@ -56,19 +56,8 @@ public class AlocacaoService {
         Recurso recurso = recursoService.findByIdEntity(alocacaoDTO.getRecursoCodigo());
 
         // Verifica se o recurso está disponível na data e horário desejados
-        if (!recursoService.isRecursoAvailable(recurso.getCodigo(), alocacaoDTO.getHorario(),
-                alocacaoDTO.getData())) {
+        if (!recursoService.isRecursoAvailable(recurso.getCodigo(), alocacaoDTO.getHorario(), alocacaoDTO.getData())) {
             throw new DataIntegrityException("Recurso não disponível na data e horário selecionados.");
-        }
-
-        // Obtém o código da turma associada à aula
-        Integer turmaCodigo = aula.getTurma().getCodigo();
-        Long professorId = aula.getTurma().getProfessor().getId();
-
-        // Verifica a disponibilidade do professor, excluindo a turma atual
-        if (!professorService.isProfessorAvailable(professorId, aula.getDiaSemana(),
-                alocacaoDTO.getHorario(), turmaCodigo)) {
-            throw new DataIntegrityException("Professor não está disponível no dia e horário selecionados.");
         }
 
         // REGRA 1 - Um recurso não pode ser associado a mais de uma turma ao mesmo tempo.
@@ -87,6 +76,7 @@ public class AlocacaoService {
         Alocacao savedAlocacao = alocacaoRepository.save(alocacao);
         return alocacaoMapper.toDTO(savedAlocacao);
     }
+
 
     public AlocacaoDTO update(Long id, AlocacaoDTO alocacaoDTO) {
         Alocacao alocacao = alocacaoRepository.findById(id)
