@@ -87,11 +87,13 @@ public class ProfessorService {
     }
 
     // Método adicional para verificar disponibilidade do professor
-    public boolean isProfessorAvailable(Long professorId, DiaSemanaEnum diaSemana, HorarioEnum horario) {
+    public boolean isProfessorAvailable(Long professorId, DiaSemanaEnum diaSemana, HorarioEnum horario, Integer excludeTurmaCodigo) {
         Professor professor = professorRepository.findById(professorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Professor não encontrado com ID: " + professorId));
-        // Verificar se o professor já tem uma turma no mesmo dia e horário
+    
+        // Verificar se o professor já tem uma turma no mesmo dia e horário, excluindo a turma atual
         return professor.getTurmas().stream()
+                .filter(turma -> !turma.getCodigo().equals(excludeTurmaCodigo))
                 .noneMatch(turma -> turma.getDiaSemana() == diaSemana && turma.getHorario() == horario);
     }
 }

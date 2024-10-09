@@ -57,13 +57,17 @@ public class AlocacaoService {
 
         // Verifica se o recurso está disponível na data e horário desejados
         if (!recursoService.isRecursoAvailable(recurso.getCodigo(), alocacaoDTO.getHorario(),
-                alocacaoDTO.getData())) { // Alterado para LocalDate
+                alocacaoDTO.getData())) {
             throw new DataIntegrityException("Recurso não disponível na data e horário selecionados.");
         }
 
-        // REGRA 6 - Um professor não pode ser alocado a duas ou mais turmas no mesmo dia e horário.
+        // Obtém o código da turma associada à aula
+        Integer turmaCodigo = aula.getTurma().getCodigo();
         Long professorId = aula.getTurma().getProfessor().getId();
-        if (!professorService.isProfessorAvailable(professorId, aula.getDiaSemana(), alocacaoDTO.getHorario())) {
+
+        // Verifica a disponibilidade do professor, excluindo a turma atual
+        if (!professorService.isProfessorAvailable(professorId, aula.getDiaSemana(),
+                alocacaoDTO.getHorario(), turmaCodigo)) {
             throw new DataIntegrityException("Professor não está disponível no dia e horário selecionados.");
         }
 
