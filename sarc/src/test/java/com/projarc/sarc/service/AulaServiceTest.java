@@ -83,12 +83,10 @@ class AulaServiceTest {
     // Configurando o aulaDTO corretamente para passar pela validação
     aulaDTO.setDiaSemana(turma.getDiaSemana());
     aulaDTO.setHorario(HorarioEnum.A);
-    aulaDTO.setData(LocalDate.of(2024, 2, 15)); // Data válida
+    aulaDTO.setData(LocalDate.of(2024, 2, 15));
 
-    // Quando o método save for chamado, ele não deve lançar exceção
     aulaService.save(aulaDTO);
 
-    // Verifica se o método aulaRepository.save foi chamado com a entidade correta
     verify(aulaRepository, times(1)).save(any(Aula.class));
   }
 
@@ -97,10 +95,8 @@ class AulaServiceTest {
     // Configura um horário inválido no DTO
     aulaDTO.setHorario(null);
 
-    // Verifica se a exceção de DataIntegrityException é lançada
     assertThrows(DataIntegrityException.class, () -> aulaService.save(aulaDTO));
 
-    // Verifica que o método save do repository não foi chamado
     verify(aulaRepository, never()).save(any(Aula.class));
   }
 }

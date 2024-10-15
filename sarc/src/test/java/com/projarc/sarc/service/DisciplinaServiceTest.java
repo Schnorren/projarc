@@ -45,12 +45,10 @@ public class DisciplinaServiceTest {
     // Simulando que o código da disciplina já existe no banco de dados
     when(disciplinaRepository.existsByCodigo("CS101")).thenReturn(true);
 
-    // Verifica se a exceção DataIntegrityException é lançada
     assertThrows(DataIntegrityException.class, () -> {
       disciplinaService.save(disciplinaDTO);
     });
 
-    // Exibe mensagem no console para visualização
     System.out.println("Exceção lançada corretamente para código de disciplina duplicado.");
   }
 
@@ -59,19 +57,15 @@ public class DisciplinaServiceTest {
     // Simulando que o código da disciplina não existe
     when(disciplinaRepository.existsByCodigo("CS101")).thenReturn(false);
 
-    // Simulando a entidade Disciplina
     Disciplina disciplina = new Disciplina();
     disciplina.setCodigo("CS101");
     disciplina.setNome("Introdução à Computação");
     disciplina.setCargaHoraria(60);
 
-    // Simulando o mapeamento de DisciplinaDTO para Disciplina
     when(disciplinaMapper.toEntity(disciplinaDTO)).thenReturn(disciplina);
 
-    // Simulando a persistência da disciplina
     when(disciplinaRepository.save(any(Disciplina.class))).thenReturn(disciplina);
 
-    // Simulando o mapeamento de Disciplina para DisciplinaDTO
     DisciplinaDTO savedDisciplinaDTO = new DisciplinaDTO();
     savedDisciplinaDTO.setCodigo("CS101");
     savedDisciplinaDTO.setNome("Introdução à Computação");
@@ -82,7 +76,6 @@ public class DisciplinaServiceTest {
     // Salvar a disciplina
     DisciplinaDTO savedDisciplina = disciplinaService.save(disciplinaDTO);
 
-    // Verifica se a disciplina foi salva corretamente
     assertNotNull(savedDisciplina);
     assertEquals("CS101", savedDisciplina.getCodigo());
 

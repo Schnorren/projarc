@@ -53,7 +53,6 @@ public class AlocacaoServiceTest {
   void setUp() {
     MockitoAnnotations.openMocks(this);
 
-    // Simulação dos objetos
     aula = new Aula();
     aula.setId(1L);
     aula.setHorario(HorarioEnum.A);
@@ -94,6 +93,7 @@ public class AlocacaoServiceTest {
         eq(alocacaoDTO.getHorario()));
   }
 
+  @SuppressWarnings("unused")
   @Test
   void shouldSaveWhenRecursoIsNotAllocated() {
     when(aulaService.findByIdEntity(anyLong())).thenReturn(aula);
@@ -117,36 +117,29 @@ public class AlocacaoServiceTest {
 
   @Test
   void shouldThrowExceptionWhenRecursoIsNotAllocatedDuringScheduledClass() {
-    // Simular a aula e a turma com horários diferentes da alocação
-    aula.setData(LocalDate.of(2024, 10, 15)); // Data diferente da alocação
-    aula.setHorario(HorarioEnum.B); // Horário diferente da alocação
+    aula.setData(LocalDate.of(2024, 10, 15));
+    aula.setHorario(HorarioEnum.B);
     when(aulaService.findByIdEntity(anyLong())).thenReturn(aula);
 
     when(recursoService.findByIdEntity(anyInt())).thenReturn(recurso);
 
-    // Simular a disponibilidade do recurso (não é o foco deste teste)
     when(recursoService.isRecursoAvailable(anyInt(), any(HorarioEnum.class), any(LocalDate.class)))
         .thenReturn(true);
 
-    // Executa o teste e espera que seja lançada uma DataIntegrityException devido
-    // ao horário errado
     assertThrows(DataIntegrityException.class, () -> alocacaoService.save(alocacaoDTO));
 
-    // Verificar se a exceção foi lançada devido ao horário e data da aula não
-    // coincidirem
-    verify(alocacaoRepository, never()).save(any(Alocacao.class)); // Certifica que o save não foi chamado
+    verify(alocacaoRepository, never()).save(any(Alocacao.class));
   }
 
+  @SuppressWarnings("unused")
   @Test
   void shouldSaveWhenRecursoIsAllocatedDuringScheduledClass() {
-    // Simular a aula com a mesma data e horário da alocação
-    aula.setData(alocacaoDTO.getData()); // Mesma data
-    aula.setHorario(alocacaoDTO.getHorario()); // Mesmo horário
+    aula.setData(alocacaoDTO.getData());
+    aula.setHorario(alocacaoDTO.getHorario());
     when(aulaService.findByIdEntity(anyLong())).thenReturn(aula);
 
     when(recursoService.findByIdEntity(anyInt())).thenReturn(recurso);
 
-    // Simular que o recurso está disponível
     when(recursoService.isRecursoAvailable(anyInt(), any(HorarioEnum.class), any(LocalDate.class)))
         .thenReturn(true);
 
@@ -155,7 +148,6 @@ public class AlocacaoServiceTest {
     when(alocacaoRepository.save(any(Alocacao.class))).thenReturn(alocacao);
     when(alocacaoMapper.toDTO(any(Alocacao.class))).thenReturn(alocacaoDTO);
 
-    // Executa o teste e verifica se o recurso foi salvo corretamente
     AlocacaoDTO savedAlocacao = alocacaoService.save(alocacaoDTO);
 
     verify(alocacaoRepository, times(1)).save(any(Alocacao.class)); // Certifica que o save foi chamado
