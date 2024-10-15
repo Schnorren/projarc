@@ -2,7 +2,8 @@ package com.projarc.sarc.exception;
 
 /**
  * Exceção personalizada para violações de integridade de dados.
- * Esta exceção é lançada quando uma operação tenta violar as regras de integridade definidas no sistema.
+ * Esta exceção é lançada quando uma operação tenta violar as regras de
+ * integridade definidas no sistema.
  */
 public class DataIntegrityException extends RuntimeException {
 

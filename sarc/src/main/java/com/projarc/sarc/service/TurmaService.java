@@ -110,6 +110,9 @@ public class TurmaService {
     }
 
     private boolean aulasDentroDoSemestre(Semestre semestre, TurmaDTO turmaDTO) {
+        if (semestre == null) {
+            throw new DataIntegrityException("Semestre não configurado.");
+        }
         return (turmaDTO.getDataInicio().isEqual(semestre.getDataInicio())
                 || turmaDTO.getDataInicio().isAfter(semestre.getDataInicio())) &&
                 (turmaDTO.getDataFim().isEqual(semestre.getDataFim())
@@ -120,7 +123,15 @@ public class TurmaService {
         Turma turma = turmaRepository.findById(codigo)
                 .orElseThrow(() -> new ResourceNotFoundException("Turma não encontrada com código: " + codigo));
 
-        // Atualiza os detalhes da turma
+        // Verificar se os recursos estão sendo alterados
+        if (!turma.getRecursos().stream()
+                .map(Recurso::getCodigo) // Utilize o método getCodigo para comparar os IDs
+                .collect(Collectors.toList())
+                .equals(turmaDTO.getRecursosIds())) {
+            throw new DataIntegrityException("Recursos não podem ser alterados.");
+        }
+
+        // Atualiza os detalhes da turma, exceto os recursos
         turma.setHorario(turmaDTO.getHorario());
 
         // Atualiza a disciplina
