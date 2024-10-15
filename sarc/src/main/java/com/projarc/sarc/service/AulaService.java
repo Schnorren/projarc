@@ -27,7 +27,8 @@ public class AulaService {
     private final SemestreService semestreService;
 
     @Autowired
-    public AulaService(AulaRepository aulaRepository, TurmaService turmaService, AulaMapper aulaMapper, SemestreService semestreService) {
+    public AulaService(AulaRepository aulaRepository, TurmaService turmaService, AulaMapper aulaMapper,
+            SemestreService semestreService) {
         this.aulaRepository = aulaRepository;
         this.turmaService = turmaService;
         this.aulaMapper = aulaMapper;
@@ -46,7 +47,7 @@ public class AulaService {
         // Obtém o semestre atual
         Semestre semestreAtual = semestreService.getCurrentSemester();
         System.out.println("Semestre atual: " + semestreAtual.getAtivo());
-        
+
         // Busca todas as turmas existentes
         List<Turma> turmas = turmaService.findAllEntities();
 
@@ -92,17 +93,24 @@ public class AulaService {
 
         Turma turma = turmaService.findByIdEntity(aulaDTO.getTurmaCodigo());
 
+        if (turma == null) {
+            throw new DataIntegrityException("Turma não encontrada.");
+        }
+
         if (turma.getDiaSemana() != aulaDTO.getDiaSemana()) {
             throw new DataIntegrityException("O dia da semana da aula deve corresponder ao da turma.");
         }
 
-        // REGRA 3 - Cada horário de turma utiliza o sistema de horários da universidade.
+        // REGRA 3 - Cada horário de turma utiliza o sistema de horários da
+        // universidade.
         if (aulaDTO.getHorario() == null || !Arrays.asList(HorarioEnum.values()).contains(aulaDTO.getHorario())) {
             throw new DataIntegrityException("Horário inválido. Deve seguir o sistema de horários da universidade.");
         }
 
-        // REGRA 7 - As aulas ocorrem entre as datas de início e término de cada semestre.
-        if (aulaDTO.getData().isBefore(semestreAtual.getDataInicio()) || aulaDTO.getData().isAfter(semestreAtual.getDataFim())) {
+        // REGRA 7 - As aulas ocorrem entre as datas de início e término de cada
+        // semestre.
+        if (aulaDTO.getData().isBefore(semestreAtual.getDataInicio())
+                || aulaDTO.getData().isAfter(semestreAtual.getDataFim())) {
             throw new DataIntegrityException("A data da aula está fora do intervalo permitido para o semestre.");
         }
 

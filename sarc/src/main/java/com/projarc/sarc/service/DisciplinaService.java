@@ -45,7 +45,7 @@ public class DisciplinaService {
 
     public DisciplinaDTO save(DisciplinaDTO disciplinaDTO) {
         // REGRA 4 - Cada código de disciplina é único.
-        if (disciplinaRepository.existsById(disciplinaDTO.getCodigo())) {
+        if (disciplinaRepository.existsByCodigo(disciplinaDTO.getCodigo())) {
             throw new DataIntegrityException("Já existe uma disciplina com o código: " + disciplinaDTO.getCodigo());
         }
         Disciplina disciplina = disciplinaMapper.toEntity(disciplinaDTO);

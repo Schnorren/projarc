@@ -89,9 +89,6 @@ Resultado: Já existe uma turma com o código: 1 para a disciplina: ProgramaÃ§
 
 
 
-
-
-
 REGRA 6 - (TurmaService)
 Um professor não pode ser alocado para duas ou mais turmas no mesmo horário e dia da semana.
 * A lógica impede que um professor seja alocado para múltiplas turmas no mesmo dia e horário. 

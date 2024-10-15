@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import com.projarc.sarc.domain.model.Alocacao;
 import com.projarc.sarc.domain.model.Aula;
 import com.projarc.sarc.domain.model.Recurso;
+import com.projarc.sarc.domain.model.Turma;
 import com.projarc.sarc.domain.repository.AlocacaoRepository;
 import com.projarc.sarc.dto.AlocacaoDTO;
 import com.projarc.sarc.exception.DataIntegrityException;
@@ -55,19 +56,37 @@ public class AlocacaoService {
         // Verifica se o recurso existe
         Recurso recurso = recursoService.findByIdEntity(alocacaoDTO.getRecursoCodigo());
 
+        if (aula == null) {
+            throw new DataIntegrityException("Aula não encontrada.");
+        }
+
+        // Verifica se a turma existe
+        Turma turma = aula.getTurma(); // Supondo que Aula tenha uma relação com Turma
+        if (turma == null) {
+            throw new DataIntegrityException("Turma não encontrada.");
+        }
+
+        // Verifica se o recurso existe
+        recurso = recursoService.findByIdEntity(alocacaoDTO.getRecursoCodigo());
+        if (recurso == null) {
+            throw new DataIntegrityException("Recurso não encontrado.");
+        }
+
         // Verifica se o recurso está disponível na data e horário desejados
         if (!recursoService.isRecursoAvailable(recurso.getCodigo(), alocacaoDTO.getHorario(), alocacaoDTO.getData())) {
             throw new DataIntegrityException("Recurso não disponível na data e horário selecionados.");
         }
 
-        // REGRA 1 - Um recurso não pode ser associado a mais de uma turma ao mesmo tempo.
+        // REGRA 1 - Um recurso não pode ser associado a mais de uma turma ao mesmo
+        // tempo.
         boolean recursoJaAlocado = alocacaoRepository.existsByRecurso_CodigoAndDataAndHorario(
                 alocacaoDTO.getRecursoCodigo(), alocacaoDTO.getData(), alocacaoDTO.getHorario());
         if (recursoJaAlocado) {
             throw new DataIntegrityException("O recurso já está alocado para esse horário e data.");
         }
 
-        // REGRA 2 - Um recurso só pode ser associado a uma turma nos horários programados da turma.
+        // REGRA 2 - Um recurso só pode ser associado a uma turma nos horários
+        // programados da turma.
         if (!aula.getData().equals(alocacaoDTO.getData()) || aula.getHorario() != alocacaoDTO.getHorario()) {
             throw new DataIntegrityException("O recurso só pode ser alocado durante o horário da aula.");
         }
@@ -77,30 +96,29 @@ public class AlocacaoService {
         return alocacaoMapper.toDTO(savedAlocacao);
     }
 
-
     public AlocacaoDTO update(Long id, AlocacaoDTO alocacaoDTO) {
         Alocacao alocacao = alocacaoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Alocação não encontrada com ID: " + id));
-    
+
         // Verificar se o recurso está sendo alterado
         if (!alocacao.getRecurso().getCodigo().equals(alocacaoDTO.getRecursoCodigo())) {
-            throw new DataIntegrityException("O recurso não pode ser alterado porque já está vinculado a uma alocação existente.");
+            throw new DataIntegrityException(
+                    "O recurso não pode ser alterado porque já está vinculado a uma alocação existente.");
         }
-    
+
         // Atualiza os detalhes da alocação
         alocacao.setData(alocacaoDTO.getData());
         alocacao.setHorario(alocacaoDTO.getHorario());
-    
+
         // Atualiza a aula
         if (alocacaoDTO.getAulaId() != null) {
             Aula aula = aulaService.findByIdEntity(alocacaoDTO.getAulaId());
             alocacao.setAula(aula);
         }
-    
+
         Alocacao updatedAlocacao = alocacaoRepository.save(alocacao);
         return alocacaoMapper.toDTO(updatedAlocacao);
     }
-    
 
     public void delete(Long id) {
         Alocacao alocacao = alocacaoRepository.findById(id)

@@ -1,21 +1,24 @@
 package com.projarc.sarc.service;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.projarc.sarc.domain.model.Disciplina;
 import com.projarc.sarc.domain.model.HorarioEnum;
 import com.projarc.sarc.domain.model.Professor;
+import com.projarc.sarc.domain.model.Recurso;
+import com.projarc.sarc.domain.model.Semestre;
 import com.projarc.sarc.domain.model.Turma;
+import com.projarc.sarc.domain.repository.RecursoRepository;
 import com.projarc.sarc.domain.repository.TurmaRepository;
 import com.projarc.sarc.dto.TurmaDTO;
 import com.projarc.sarc.exception.DataIntegrityException;
 import com.projarc.sarc.exception.ResourceNotFoundException;
 import com.projarc.sarc.mapper.TurmaMapper;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class TurmaService {
@@ -24,14 +27,19 @@ public class TurmaService {
     private final DisciplinaService disciplinaService;
     private final ProfessorService professorService;
     private final TurmaMapper turmaMapper;
+    private final SemestreService semestreService;
+    private final RecursoRepository recursoRepository;
 
     @Autowired
     public TurmaService(TurmaRepository turmaRepository, DisciplinaService disciplinaService,
-            ProfessorService professorService, TurmaMapper turmaMapper) {
+            ProfessorService professorService, TurmaMapper turmaMapper, SemestreService semestreService,
+            RecursoRepository recursoRepository) {
         this.turmaRepository = turmaRepository;
         this.disciplinaService = disciplinaService;
         this.professorService = professorService;
         this.turmaMapper = turmaMapper;
+        this.semestreService = semestreService;
+        this.recursoRepository = recursoRepository;
     }
 
     public TurmaDTO findById(Integer codigo) {
@@ -57,36 +65,55 @@ public class TurmaService {
     }
 
     public TurmaDTO save(TurmaDTO turmaDTO) {
-
-        // REGRA 3 - Cada horário de turma utiliza o sistema de horários da universidade.
+        // Verificações de integridade
         if (turmaDTO.getHorario() == null || !Arrays.asList(HorarioEnum.values()).contains(turmaDTO.getHorario())) {
             throw new DataIntegrityException("Horário inválido. Deve seguir o sistema de horários da universidade.");
         }
 
-        // Verifica se a disciplina existe
         Disciplina disciplina = disciplinaService.findByIdEntity(turmaDTO.getDisciplinaCodigo());
-
         Professor professor = professorService.findByIdEntity(turmaDTO.getProfessorId());
 
-        // Verificar disponibilidade do professor no dia e horário
+        // Verificar disponibilidade do professor
         List<Turma> turmas = turmaRepository.findByProfessorAndDiaSemanaAndHorario(
-            professor, turmaDTO.getDiaSemana(), turmaDTO.getHorario()
-        );
-
-        // REGRA 6 - Um professor não pode ser alocado a duas ou mais turmas no mesmo dia e horário.
+                professor, turmaDTO.getDiaSemana(), turmaDTO.getHorario());
         if (!turmas.isEmpty()) {
             throw new DataIntegrityException("O professor já está alocado a outra turma no mesmo dia e horário.");
         }
 
-        // REGRA 5 - Cada código de turma deve ser único para a mesma disciplina.
+        // Verificação de código único
         if (turmaRepository.existsByCodigoAndDisciplina(turmaDTO.getCodigo(), disciplina)) {
             throw new DataIntegrityException("Já existe uma turma com o código: " + turmaDTO.getCodigo()
                     + " para a disciplina: " + disciplina.getNome());
         }
 
+        // Verificação de datas do semestre
+        Semestre semestreAtual = semestreService.getCurrentSemester();
+        if (!aulasDentroDoSemestre(semestreAtual, turmaDTO)) {
+            throw new DataIntegrityException("As aulas estão fora do período do semestre atual.");
+        }
+
+        // Busca de recursos
+        List<Recurso> recursos = buscarRecursos(turmaDTO.getRecursosIds());
+
+        // Criação e salvamento da turma
         Turma turma = turmaMapper.toEntity(turmaDTO);
+        turma.setRecursos(recursos);
         Turma savedTurma = turmaRepository.save(turma);
         return turmaMapper.toDTO(savedTurma);
+    }
+
+    private List<Recurso> buscarRecursos(List<Integer> recursosIds) {
+        return recursosIds.stream()
+                .map(recursoId -> recursoRepository.findById(recursoId)
+                        .orElseThrow(() -> new DataIntegrityException("Recurso não encontrado com id: " + recursoId)))
+                .collect(Collectors.toList());
+    }
+
+    private boolean aulasDentroDoSemestre(Semestre semestre, TurmaDTO turmaDTO) {
+        return (turmaDTO.getDataInicio().isEqual(semestre.getDataInicio())
+                || turmaDTO.getDataInicio().isAfter(semestre.getDataInicio())) &&
+                (turmaDTO.getDataFim().isEqual(semestre.getDataFim())
+                        || turmaDTO.getDataFim().isBefore(semestre.getDataFim()));
     }
 
     public TurmaDTO update(Integer codigo, TurmaDTO turmaDTO) {

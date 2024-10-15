@@ -20,4 +20,9 @@ public class Recurso {
     @OneToMany(mappedBy = "recurso", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<Alocacao> alocacoes;
+
+    public Recurso(Integer codigo, String descricao) {
+        this.codigo = codigo;
+        this.descricao = descricao;
+    }
 }

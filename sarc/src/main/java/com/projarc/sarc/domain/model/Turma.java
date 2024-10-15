@@ -33,4 +33,8 @@ public class Turma {
     @OneToMany(mappedBy = "turma", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<Aula> aulas;
+
+    @ManyToMany
+    @JoinTable(name = "turma_recurso", joinColumns = @JoinColumn(name = "turma_id"), inverseJoinColumns = @JoinColumn(name = "recurso_id"))
+    private List<Recurso> recursos;
 }
